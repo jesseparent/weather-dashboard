@@ -1,13 +1,15 @@
 // Get Weather from Open Weather API
+let weatherOpen = "d29753543671bbb32ab67b6cd97cac2e";
+
 let fetchWeather = function () {
   // Get today's weather and UV Index in imperial units
-  fetch("http://api.openweathermap.org/data/2.5/weather?q=Salt%20Lake%20City&appid=be266188bc75165d28d8ae37e120afe8&units=imperial")
+  fetch("http://api.openweathermap.org/data/2.5/weather?q=Salt%20Lake%20City&appid=" + weatherOpen + "&units=imperial")
     .then(function (weatherResponse) {
       return weatherResponse.json();
     })
     .then(function (weatherObj) {
       displayWeather(weatherObj);
-      return fetch("http://api.openweathermap.org/data/2.5/uvi?appid=be266188bc75165d28d8ae37e120afe8&lat=" + weatherObj.coord.lat + "&lon=" + weatherObj.coord.lon)
+      return fetch("http://api.openweathermap.org/data/2.5/uvi?appid=" + weatherOpen + "&lat=" + weatherObj.coord.lat + "&lon=" + weatherObj.coord.lon)
     })
     .then(function (uviResonse) {
       return uviResonse.json();
@@ -17,7 +19,7 @@ let fetchWeather = function () {
     });
 
   // Get 5-day forecast in imperial units
-  fetch("http://api.openweathermap.org/data/2.5/forecast?q=Salt%20Lake%20City&appid=be266188bc75165d28d8ae37e120afe8&units=imperial")
+  fetch("http://api.openweathermap.org/data/2.5/forecast?q=Salt%20Lake%20City&appid=" + weatherOpen + "&units=imperial")
     .then(function (forecastResponse) {
       return forecastResponse.json();
     })
