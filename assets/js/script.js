@@ -45,7 +45,8 @@ let displayWeather = function (dataObj) {
 // Display UV Index for today
 let displayUVI = function (uviObj) {
   let uvIndex = uviObj.value;
-  console.log("UV Index: " + uvIndex);
+  let condition = (uvIndex < 6)? ((uvIndex < 3)? "favorable" : "moderate") : "severe";
+  console.log("UV Index: " + uvIndex + " - " + condition);
 };
 
 // Display 5 Day forecast
