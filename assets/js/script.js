@@ -1,5 +1,7 @@
 // Get Weather from Open Weather API
 let weatherOpen = "d29753543671bbb32ab67b6cd97cac2e";
+let lat = "";
+let long = "";
 
 let fetchWeather = function () {
   // Get today's weather and UV Index in imperial units
@@ -9,22 +11,14 @@ let fetchWeather = function () {
     })
     .then(function (weatherObj) {
       displayWeather(weatherObj);
-      return fetch("http://api.openweathermap.org/data/2.5/uvi?appid=" + weatherOpen + "&lat=" + weatherObj.coord.lat + "&lon=" + weatherObj.coord.lon)
+      return fetch("https://api.openweathermap.org/data/2.5/onecall?exclude=minutely,hourly&units=imperial&appid=" + weatherOpen + "&lat=" + weatherObj.coord.lat + "&lon=" + weatherObj.coord.lon)
     })
-    .then(function (uviResonse) {
-      return uviResonse.json();
+    .then(function (oneCallResonse) {
+      return oneCallResonse.json();
     })
-    .then(function (uviObj) {
-      displayUVI(uviObj)
-    });
-
-  // Get 5-day forecast in imperial units
-  fetch("http://api.openweathermap.org/data/2.5/forecast?q=Salt%20Lake%20City&appid=" + weatherOpen + "&units=imperial")
-    .then(function (forecastResponse) {
-      return forecastResponse.json();
-    })
-    .then(function (forecastObj) {
-      displayFiveDay(forecastObj);
+    .then(function (oneCallObj) {
+      displayUVI(oneCallObj)
+      displayFiveDay(oneCallObj);
     });
 };
 
@@ -46,14 +40,14 @@ let displayWeather = function (dataObj) {
 
 // Display UV Index for today
 let displayUVI = function (uviObj) {
-  let uvIndex = uviObj.value;
+  let uvIndex = uviObj.current.uvi;
   let condition = (uvIndex < 6)? ((uvIndex < 3)? "favorable" : "moderate") : "severe";
   console.log("UV Index: " + uvIndex + " - " + condition);
 };
 
 // Display 5 Day forecast
 let displayFiveDay = function (forecastObj) {
-  let days = forecastObj.list;
+  let days = forecastObj.daily;
 
   console.log("----------");
   for (let i = 0; i < days.length; i++) {
@@ -61,9 +55,9 @@ let displayFiveDay = function (forecastObj) {
     console.log(theDate);
     let weatherIcon = days[i].weather[0].icon;
     console.log("http://openweathermap.org/img/wn/" + weatherIcon + "@2x.png");
-    let temperature = days[i].main.temp;
+    let temperature = days[i].temp.day;
     console.log("Temperature: " + temperature + " °F");
-    let humidity = days[i].main.humidity;
+    let humidity = days[i].humidity;
     console.log("Humidity: " + humidity + "%");
     console.log("----------");
   }
