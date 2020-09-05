@@ -1,10 +1,29 @@
 // Store Open Weather API key
 let openWeatherKey = "d29753543671bbb32ab67b6cd97cac2e";
 
+// Store good HTML for each results panel in case an erorr gets displayed and we need to recover this
 let todayGoodResult = $(".today").html();
 let fiveDayGoodResult = $("#fiveDayCards").html();
 
+// Find the history list element
+let historyList = $(".list-group");
+
+// History of cities that have been searched
+let historyLinks = JSON.parse(localStorage.getItem('history')) // Check local storage for values
+  // If there is nothing in local storage, create an empty list
+  || [];
+
+// Keep track of what the last search was
+let searchedCity = "";
+
+// Fetch the weather of the city  
 let fetchWeather = function (city) {
+  // Show Results panel
+  setupResults();
+
+  // Keep track of what the last search was
+  searchedCity = city;
+
   // Get today's weather and UV Index in imperial units
   fetch("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + openWeatherKey + "&units=imperial")
     .then(function (weatherResponse) {
@@ -30,19 +49,19 @@ let fetchWeather = function (city) {
       }
     })
     .then(function (oneCallObj) {
-      displayUVI(oneCallObj)
-      displayFiveDay(oneCallObj);
+      displayUVI(oneCallObj); // Display UV Index
+      displayFiveDay(oneCallObj); // Display Five Day Forecast
     })
     .catch(function (error) {
       // Error thrown
       let today = $(".today");
       let fiveDay = $("#fiveDayCards");
 
-      if (error === "Weather") {        
+      if (error === "Weather") {
         today.html("<h2>Cannot Obtain Data for that Query</h2>");
         today.css("visibility", "visible");
       }
-      else if (error === "OneCall") {        
+      else if (error === "OneCall") {
         fiveDay.html("<h2>No 5 Day Forecast for that Query</h2>");
         fiveDay.css("visibility", "visible");
       }
@@ -60,6 +79,7 @@ let displayWeather = function (dataObj) {
   let todaysDate = moment(parseInt(dataObj.dt) * 1000).format("M/DD/YYYY");
   let weatherIcon = dataObj.weather[0].icon;
 
+  // City, date, and weather icon
   $("#cityDate").html(cityName + ' (' + todaysDate + ')  <img class="wi" src="http://openweathermap.org/img/wn/' + weatherIcon + '@2x.png">');
 
   // Weather details for city
@@ -73,6 +93,9 @@ let displayWeather = function (dataObj) {
 
   // Show today's forecast
   $(".today").css("visibility", "visible");
+
+  // This was a successful search - save it
+  saveToHistory(cityName);
 };
 
 // Display UV Index for today
@@ -125,6 +148,63 @@ let setupResults = function () {
   $("#fiveDayCards").html(fiveDayGoodResult);
 };
 
+// Load history and display it
+let loadHistory = function () {
+  historyList.html("");
+  for (let i = 0; i < historyLinks.length; i++) {
+    liItem = '<li class="list-group-item d-flex justify-content-between align-items-center" data-search-string="' + historyLinks[i].searchString + '"><span id="displayText">' + historyLinks[i].display + '</span><span><button class="btn btn-danger p-1">x</button></span></li>';
+    historyList.append(liItem);
+  }
+
+  // Set up listeners for history items
+  $(".btn-danger").click(function (event) {
+    event.stopPropagation();
+    deleteItem($(this).closest("li").children("#displayText").text());
+  });
+
+  $(".list-group-item").click(function () {
+    fetchWeather($(this).attr("data-search-string"));
+  });
+};
+
+// Save to history of searches to local storage
+let saveToHistory = function (city) {
+  let historyObj = { "display": city, "searchString": searchedCity };
+
+  // Don't save duplicates
+  if (historyObjIsUnique(historyObj, historyLinks)) {
+    historyLinks.push(historyObj);
+
+    localStorage.setItem('history', JSON.stringify(historyLinks));
+
+    loadHistory();
+  }
+};
+
+// Test that history object is not in history
+let historyObjIsUnique = function (obj, arr) {
+  for (let i = 0; i < arr.length; i++) {
+    if (obj.display === arr[i].display) {
+      return false;
+    }
+  }
+  return true;
+};
+
+// Delete item from history
+let deleteItem = function(city) {
+  for (let i = 0; i < historyLinks.length; i++) {
+    if (city === historyLinks[i].display) {
+      historyLinks.splice(i, 1);
+      break;
+    }
+  }
+
+  localStorage.setItem('history', JSON.stringify(historyLinks));
+
+  loadHistory();
+};
+
 // Search button clicked
 $("#citySearchBtn").click(function () {
 
@@ -133,7 +213,7 @@ $("#citySearchBtn").click(function () {
 
   // Query the city's weather
   fetchWeather(city);
-
-  // Show Results panel
-  setupResults();
 });
+
+// Load the history of previous searches
+loadHistory();
