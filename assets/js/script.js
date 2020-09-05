@@ -1,5 +1,6 @@
 // Store Open Weather API key
 let openWeatherKey = "d29753543671bbb32ab67b6cd97cac2e";
+let zipCodeKey = "SPv93RVeQxyvRKJ8XkKJtA2i8RlDKDnTgCNyPczfOET3cfp6jWdypgOlACRDEBLG";
 
 // Store good HTML for each results panel in case an erorr gets displayed and we need to recover this
 let todayGoodResult = $(".today").html();
@@ -69,6 +70,29 @@ let fetchWeather = function (city) {
         today.html("<h2>Failed to Reach API</h2>");
         today.css("visibility", "visible");
       }
+    });
+};
+
+// Open Weather cannot take just "City, State" so find a Zip Code to use
+let fetchZipCodeThenWeather = function (cityState) {
+  let cityStateArr = cityState.split(", ");
+
+  fetch("https://cors-anywhere.herokuapp.com/https://www.zipcodeapi.com/rest/" + zipCodeKey + "/city-zips.json/" + cityStateArr[0] + "/" + cityStateArr[1])
+    .then(function (zipCodeResponse) {
+      if (zipCodeResponse.ok) {
+        return zipCodeResponse.json();
+      }
+      else {
+        throw "Error";
+      }
+    })
+    .then(function (zipCodeObj) {
+      let cityStateZip = cityState + " " + zipCodeObj.zip_codes[0];
+      fetchWeather(cityStateZip);
+    })
+    .catch(function (error) {
+      // Zip code lookup failed, let the main fatechWeather function handle the error
+      fetchWeather(cityState);
     });
 };
 
@@ -192,7 +216,7 @@ let historyObjIsUnique = function (obj, arr) {
 };
 
 // Delete item from history
-let deleteItem = function(city) {
+let deleteItem = function (city) {
   for (let i = 0; i < historyLinks.length; i++) {
     if (city === historyLinks[i].display) {
       historyLinks.splice(i, 1);
@@ -205,14 +229,39 @@ let deleteItem = function(city) {
   loadHistory();
 };
 
+let cityStateFormat = function (searchString) {
+  let commaArr = searchString.split(", ");
+  if (commaArr.length <= 1) {
+    // No comma, so this is just a City
+    return false;
+  }
+
+  let spaceArr = commaArr[1].split(" ");
+  if (spaceArr.length <= 1) {
+    // No space, so this is just a State with no zip
+    return true;
+  }
+  else {
+    // Space exists so assuming a zip code
+    return false;
+  }
+
+};
+
 // Search button clicked
 $("#citySearchBtn").click(function () {
 
   // Get city to find the weather for
   let city = $(this).siblings("#cityInput").val();
 
-  // Query the city's weather
-  fetchWeather(city);
+  // Is this in "City, State" format? If so, need the zip code, first
+  if (cityStateFormat(city)) {
+    fetchZipCodeThenWeather(city);
+  }
+  else {
+    // Query the city's weather
+    fetchWeather(city);
+  }
 });
 
 // Load the history of previous searches
