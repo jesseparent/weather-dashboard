@@ -28,7 +28,7 @@
           <label for="formGroupExampleInput">
             <h4>Search for a City:</h4>
           </label>
-          <input type="text" class="form-control" id="formGroupExampleInput"><button type="button"
+          <input type="text" class="form-control" id="cityInput" /><button type="button" id="citySearchBtn"
             class="btn btn-primary text-nowrap"><span class="oi oi-magnifying-glass"></span></button>
         </div>
         <ul class="list-group">
@@ -40,70 +40,65 @@
         </ul>
       </div>
       <!-- Results Panels -->
-      <div class="col-9">
-        <div class="row">
+      <div class="results col-9">
+        <div class="today row">
           <!-- Current Weather -->
           <div class="col-12">
-            <h2 id="cityDate">Atlanta (8/15/2019)</h2>
-            <p>Temperature: <span id="temperature">90.9</span> F</p>
-            <p>Humidity: <span id=humidity>41</span>%</p>
-            <p>Wind Speed: <span id="windSpeed">4.7</span> MPH</p>
-            <p>UV Index: <span id="uvIndex">9.49</span></p>
+            <h2 id="cityDate"></h2>
+            <p>Temperature: <span id="temperature"></span> °F</p>
+            <p>Humidity: <span id=humidity></span>%</p>
+            <p>Wind Speed: <span id="windSpeed"></span> MPH</p>
+            <p>UV Index: <span id="uvIndex"></span></p>
           </div>
           <!-- 5-Day Forecast -->
-          <div class="col-12">
+          <div class="fiveDay col-12">
             <h4>5-Day Forecast:</h4>
           </div>
           <!-- Daily Cards -->
-          <div class="card-deck">
-            <div class="card text-white bg-primary" id="forecast0">
-              <div class="card-body">
-                <h5 class="card-title" id="date">8/17/2019</h5>
-                <p class="card-text">
-                <p><img id="icon" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
-                <p>Temp: <span id="temp0">86.32</span> °F</p>
-                <p>Humidity: <span id="hum0">12</span>%</p>
-                </p>
-              </div>
-            </div>
+          <div id="fiveDayCards" class="fiveDay card-deck">
             <div class="card text-white bg-primary" id="forecast1">
               <div class="card-body">
-                <h5 class="card-title">8/18/2019</h5>
+                <h5 class="card-title"></h5>
                 <p class="card-text">
-                <p><img src="http://openweathermap.org/img/wn/01d@2x.png"></p>
-                <p>Temp: 86.32 °F</p>
-                <p>Humidity: 12%</p>
-                </p>
+                <p><img class="wi" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
+                <p>Temp: <span class="temp"></span> °F</p>
+                <p>Humidity: <span class="hum"></span>%</p>
               </div>
             </div>
             <div class="card text-white bg-primary" id="forecast2">
               <div class="card-body">
-                <h5 class="card-title">8/19/2019</h5>
+                <h5 class="card-title"></h5>
                 <p class="card-text">
-                <p><img src="http://openweathermap.org/img/wn/01d@2x.png"></p>
-                <p>Temp: 86.32 °F</p>
-                <p>Humidity: 12%</p>
-                </p>
+                <p><img class="wi" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
+                <p>Temp: <span class="temp"></span> °F</p>
+                <p>Humidity: <span class="hum"></span>%</p>
+              </div>
+            </div>
+            <div class="card text-white bg-primary" id="forecast3">
+              <div class="card-body">
+                <h5 class="card-title"></h5>
+                <p class="card-text">
+                <p><img class="wi" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
+                <p>Temp: <span class="temp"></span> °F</p>
+                <p>Humidity: <span class="hum"></span>%</p>
               </div>
             </div>
             <div class="card text-white bg-primary" id="forecast4">
               <div class="card-body">
-                <h5 class="card-title">8/20/2019</h5>
+                <h5 class="card-title"></h5>
                 <p class="card-text">
-                <p><img src="http://openweathermap.org/img/wn/01d@2x.png"></p>
-                <p>Temp: 86.32 °F</p>
-                <p>Humidity: 12%</p>
-                </p>
+                <p><img class="wi" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
+                <p>Temp: <span class="temp"></span> °F</p>
+                <p>Humidity: <span class="hum"></span>%</p>
               </div>
             </div>
-            <div class="card text-white bg-primary" id="forecast4">
+            <div class="card text-white bg-primary" id="forecast5">
               <div class="card-body">
-                <h5 class="card-title">8/21/2019</h5>
+                <h5 class="card-title"></h5>
                 <p class="card-text">
-                <p><img src="http://openweathermap.org/img/wn/01d@2x.png"></p>
-                <p>Temp: 86.32 °F</p>
-                <p>Humidity: 12%</p>
-                </p>
+                <p><img class="wi" src="http://openweathermap.org/img/wn/01d@2x.png"></p>
+                <p>Temp: <span class="temp"></span> °F</p>
+                <p>Humidity: <span class="hum"></span>%</p>
               </div>
             </div>
           </div>
@@ -112,6 +107,8 @@
     </div>
   </div>
 
+  <!-- Script Files -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
   <script src="./assets/js/script.js"></script>
 </body>
