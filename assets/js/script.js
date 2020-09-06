@@ -178,8 +178,17 @@ let setupResults = function () {
 // Load history and display it
 let loadHistory = function () {
   historyList.html("");
+
+  if (historyLinks.length > 0) {
+    $("#deleteHistory").removeClass("d-none");
+  }
+  else {
+    $("#deleteHistory").addClass("d-none");
+  }
+
   for (let i = 0; i < historyLinks.length; i++) {
-    liItem = '<li class="list-group-item d-flex justify-content-between align-items-center" data-search-string="' + historyLinks[i].searchString + '"><span id="displayText">' + historyLinks[i].display + '</span><span><button class="btn btn-danger p-1">x</button></span></li>';
+    liItem = '<li class="list-group-item d-flex justify-content-between align-items-center" data-search-string="' + historyLinks[i].searchString +
+      '"><span id="displayText">' + historyLinks[i].display + '</span><button class="btn btn-danger p-1" title="Delete ' + historyLinks[i].display + '"><b>X</b></button></li>';
     historyList.append(liItem);
   }
 
@@ -265,6 +274,9 @@ $("#citySearchBtn").click(function () {
     // Query the city's weather
     fetchWeather(city);
   }
+
+  // Clear the input value
+  $("#cityInput").val("");
 });
 
 // Enter is pressed while in text input
@@ -273,6 +285,15 @@ $("#cityInput").keyup(function (event) {
     // Simulate a button click
     $("#citySearchBtn").click();
   }
+});
+
+// Remove history
+$("#deleteHistoryBtn").click(function () {
+  historyLinks = [];
+
+  localStorage.setItem('history', JSON.stringify(historyLinks));
+
+  loadHistory();
 });
 
 // Load the history of previous searches
