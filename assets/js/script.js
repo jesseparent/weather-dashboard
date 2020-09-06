@@ -75,6 +75,8 @@ let fetchWeather = function (city) {
 
 // Open Weather cannot take just "City, State" so find a Zip Code to use
 let fetchZipCodeThenWeather = function (cityState) {
+  setupResults();
+
   let cityStateArr = cityState.split(", ");
 
   fetch("https://cors-anywhere.herokuapp.com/https://www.zipcodeapi.com/rest/" + zipCodeKey + "/city-zips.json/" + cityStateArr[0] + "/" + cityStateArr[1])
@@ -87,6 +89,7 @@ let fetchZipCodeThenWeather = function (cityState) {
       }
     })
     .then(function (zipCodeObj) {
+      // Got the Zip Code so let's give it to the fetchWeather function
       let cityStateZip = cityState + " " + zipCodeObj.zip_codes[0];
       fetchWeather(cityStateZip);
     })
@@ -261,6 +264,14 @@ $("#citySearchBtn").click(function () {
   else {
     // Query the city's weather
     fetchWeather(city);
+  }
+});
+
+// Enter is pressed while in text input
+$("#cityInput").keyup(function (event) {
+  if (event.which == 13) {
+    // Simulate a button click
+    $("#citySearchBtn").click();
   }
 });
 
