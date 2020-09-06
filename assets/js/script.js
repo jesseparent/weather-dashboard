@@ -26,7 +26,7 @@ let fetchWeather = function (city) {
   searchedCity = city;
 
   // Get today's weather and UV Index in imperial units
-  fetch("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + openWeatherKey + "&units=imperial")
+  fetch("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + openWeatherKey + "&units=imperial")
     .then(function (weatherResponse) {
       if (weatherResponse.ok) {
         return weatherResponse.json();
