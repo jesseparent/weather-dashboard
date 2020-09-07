@@ -1,8 +1,9 @@
+//------------------- Global Variables ------------------------
 // Store Open Weather API key
 let openWeatherKey = "d29753543671bbb32ab67b6cd97cac2e";
 let zipCodeKey = "SPv93RVeQxyvRKJ8XkKJtA2i8RlDKDnTgCNyPczfOET3cfp6jWdypgOlACRDEBLG";
 
-// Store good HTML for each results panel in case an erorr gets displayed and we need to recover this
+// Store good HTML for each results panel in case an error gets displayed and we need to recover this
 let todayGoodResult = $(".today").html();
 let fiveDayGoodResult = $("#fiveDayCards").html();
 
@@ -17,12 +18,13 @@ let historyLinks = JSON.parse(localStorage.getItem('history')) // Check local st
 // Keep track of what the last search was
 let searchedCity = "";
 
+//------------------- Functions ------------------------
 // Fetch the weather of the city  
 let fetchWeather = function (city) {
   // Show Results panel
   setupResults();
 
-  // Keep track of what the last search was
+  // Keep track of what the last search was so we can store it in history
   searchedCity = city;
 
   // Get today's weather and UV Index in imperial units
@@ -37,6 +39,7 @@ let fetchWeather = function (city) {
       }
     })
     .then(function (weatherObj) {
+      // Display today's weather information
       displayWeather(weatherObj);
       return fetch("https://api.openweathermap.org/data/2.5/onecall?exclude=minutely,hourly&units=imperial&appid=" + openWeatherKey + "&lat=" + weatherObj.coord.lat + "&lon=" + weatherObj.coord.lon);
     })
@@ -79,6 +82,7 @@ let fetchZipCodeThenWeather = function (cityState) {
 
   let cityStateArr = cityState.split(", ");
 
+  // Need to avoid Cross-Origin Resource Sharing issues so use Heroku's CORS Anywhere app to lookup up ZipCode API's app
   fetch("https://cors-anywhere.herokuapp.com/https://www.zipcodeapi.com/rest/" + zipCodeKey + "/city-zips.json/" + cityStateArr[0] + "/" + cityStateArr[1])
     .then(function (zipCodeResponse) {
       if (zipCodeResponse.ok) {
@@ -94,7 +98,7 @@ let fetchZipCodeThenWeather = function (cityState) {
       fetchWeather(cityStateZip);
     })
     .catch(function (error) {
-      // Zip code lookup failed, let the main fatechWeather function handle the error
+      // Zip code lookup failed, let the main fetchWeather function handle the error
       fetchWeather(cityState);
     });
 };
@@ -106,7 +110,7 @@ let displayWeather = function (dataObj) {
   let todaysDate = moment(parseInt(dataObj.dt) * 1000).format("M/DD/YYYY");
   let weatherIcon = dataObj.weather[0].icon;
 
-  // City, date, and weather icon
+  // Display city, date, and weather icon
   $("#cityDate").html(cityName + ' (' + todaysDate + ')  <img class="wi" src="http://openweathermap.org/img/wn/' + weatherIcon + '@2x.png">');
 
   // Weather details for city
@@ -121,7 +125,7 @@ let displayWeather = function (dataObj) {
   // Show today's forecast
   $(".today").css("visibility", "visible");
 
-  // This was a successful search - save it
+  // This was a successful search - save it to history
   saveToHistory(cityName);
 };
 
@@ -179,6 +183,7 @@ let setupResults = function () {
 let loadHistory = function () {
   historyList.html("");
 
+  // If there is something to show, make the results visible
   if (historyLinks.length > 0) {
     $("#deleteHistory").removeClass("d-none");
   }
@@ -186,6 +191,7 @@ let loadHistory = function () {
     $("#deleteHistory").addClass("d-none");
   }
 
+  // List the history
   for (let i = 0; i < historyLinks.length; i++) {
     liItem = '<li class="list-group-item d-flex justify-content-between align-items-center" data-search-string="' + historyLinks[i].searchString +
       '"><span id="displayText">' + historyLinks[i].display + '</span><button class="btn btn-danger p-1" title="Delete ' + historyLinks[i].display + '"><b>X</b></button></li>';
